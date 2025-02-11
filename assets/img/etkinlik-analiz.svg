@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
+  <defs>
+    <filter id="powerfulGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur"/>
+      <feFlood flood-color="#ffffff" flood-opacity="0.7" result="glowColor"/>
+      <feComposite in="glowColor" in2="blur" operator="in" result="softGlow"/>
+      <feMerge>
+        <feMergeNode in="softGlow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="strongShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur"/>
+      <feOffset in="blur" dx="3" dy="3" result="offsetBlur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.5" result="shadowColor"/>
+      <feComposite in="shadowColor" in2="offsetBlur" operator="in" result="shadowBlur"/>
+      <feMerge>
+        <feMergeNode in="shadowBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <g transform="translate(200, 100)" filter="url(#strongShadow)">
+    <text x="0" y="0" 
+          text-anchor="middle" 
+          font-family="'Open Sans', sans-serif" 
+          font-size="38" 
+          letter-spacing="2"
+          font-weight="900" 
+          stroke="#EEEEEE" 
+          stroke-width="6" 
+          fill="none">ETKİNLİK</text>
+    <text x="0" y="0" 
+          text-anchor="middle" 
+          font-family="'Open Sans', sans-serif" 
+          font-size="38" 
+          letter-spacing="2"
+          font-weight="900" 
+          fill="#0D0D0D">ETKİNLİK</text>
+    
+    <text x="0" y="50" 
+          text-anchor="middle" 
+          font-family="'Open Sans', sans-serif" 
+          font-size="46" 
+          letter-spacing="6"
+          font-weight="700" 
+          stroke="#EEEEEE" 
+          stroke-width="6" 
+          fill="none">ANALİZ</text>
+    <text x="0" y="50" 
+          text-anchor="middle" 
+          font-family="'Open Sans', sans-serif" 
+          font-size="46" 
+          letter-spacing="6"
+          font-weight="700" 
+          fill="#0D0D0D">ANALİZ</text>
+  </g>
+</svg>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kullanıcı Etkinlik Haritası</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <img src="assets/img/etkinlik-analiz.svg" alt="Etkinlik Analiz" class="logo">
+</head>
+<body>
+    
+    <div id="map-menu-top">
+        <button type="button" class="btn-circle" id="filterBtn">
+            <i class="fas fa-filter"></i>
+        </button>
+        <button type="button" class="btn-circle">
+            <i class="fas fa-info-circle"></i>
+        </button>
+    </div>
+
+    <div id="map-menu-bottom">
+        <button type="button" class="btn-circle" id="layerBtn">
+            <i class="fas fa-layer-group"></i>
+        </button>
+        <button type="button" class="btn-circle">
+            <i class="fas fa-location-arrow"></i>
+        </button>
+        <button type="button" class="btn-circle" onclick="map.zoomIn()">
+            <i class="fas fa-plus"></i>
+        </button>
+        <button type="button" class="btn-circle" onclick="map.zoomOut()">
+            <i class="fas fa-minus"></i>
+        </button>
+    </div>
+
+    <div id="layersModal" class="layers-modal">
+        <h4 style="margin-top: 0; margin-bottom: 15px; font-size: 16px;">Katmanlar</h4>
+        <div class="layer-group">
+            <div class="layer-option">
+                <input type="radio" id="cartoLight" name="baseLayer" value="cartoLight" checked>
+                <label for="cartoLight">Carto Light</label>
+            </div>
+            <div class="layer-option">
+                <input type="radio" id="osm" name="baseLayer" value="osm">
+                <label for="osm">OpenStreetMap</label>
+            </div>
+        </div>
+    </div>
+
+    <div id="filtersModal" class="filters-modal">
+        <h4 class="text-lg font-bold mb-4">Filtreler</h4>
+        
+        <!-- Tab Headers -->
+        <div class="filter-tabs">
+            <button class="tab-button active" data-tab="userFilters">Kullanıcı Filtreleri</button>
+            <button class="tab-button" data-tab="venueFilters">Mekan Filtreleri</button>
+            <button class="tab-button" data-tab="eventFilters">Etkinlik Filtreleri</button>
+        </div>
+        
+        <!-- User Filters Tab -->
+        <div class="tab-content active" id="userFilters">
+            <div class="filter-group">
+                <label>Kullanıcı İlçesi:</label>
+                <select id="userDistrictFilter">
+                    <option value="all">Tümü</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Yaş Aralığı:</label>
+                <select id="ageFilter">
+                    <option value="all">Tümü</option>
+                    <option value="18-25">18-25</option>
+                    <option value="26-35">26-35</option>
+                    <option value="36-45">36-45</option>
+                    <option value="45+">45+</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Venue Filters Tab -->
+        <div class="tab-content" id="venueFilters">
+            <div class="filter-group">
+                <label>Mekan İlçesi:</label>
+                <select id="venueDistrictFilter">
+                    <option value="all">Tümü</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Mekan:</label>
+                <select id="venueFilter">
+                    <option value="all">Tümü</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Event Filters Tab -->
+        <div class="tab-content" id="eventFilters">
+            <div class="filter-group">
+                <label>Etkinlik Kategorisi:</label>
+                <select id="categoryFilter">
+                    <option value="all">Tümü</option>
+                    <option value="tiyatro">Tiyatro</option>
+                    <option value="konser">Konser</option>
+                    <option value="festival">Festival</option>
+                    <option value="sergi">Sergi</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Seyahat Mesafesi:</label>
+                <select id="distanceFilter">
+                    <option value="all">Tümü</option>
+                    <option value="low">Düşük (0-5 km)</option>
+                    <option value="medium">Orta (5-10 km)</option>
+                    <option value="high">Yüksek (10+ km)</option>
+                </select>
+            </div>
+        </div>
+    
+        <button onclick="updateMap()" class="filter-button">Uygula</button>
+    </div>
+
+    <div id="map-legend">
+        <div class="legend-gradient"></div>
+        <div class="legend-labels">
+            <span class="legend-text">Yüksek</span>
+            <span class="legend-text">Orta</span>
+            <span class="legend-text">Düşük</span>
+        </div>
+    </div>
+
+    <div id="map" style="width: 100%; height: 100vh;"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.heat/0.2.0/leaflet-heat.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="assets/js/scripts.js"></script>
+</body>
+</html>

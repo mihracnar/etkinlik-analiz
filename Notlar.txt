@@ -1,0 +1,117 @@
+I. Girdi olarak 3 data kullanılacak
+    1. Users
+
+    {
+    "type": "Feature",
+    "geometry": {
+        "type": "Point",
+        "coordinates": [28.95672, 41.02853]
+    },
+    "properties": {
+        "user_properties": {
+            "userId": "user1",
+            "u_neighbourhood_uavt": "1111",
+            "u_neighbourhood_district": "Kadıköy",
+            "logedinlocation_neighbourhood": "Osmanağa",
+            "logedinlocation_uavt": "2222",
+            "ll_neighbourhood_district": "Kadıköy",
+            "age": "26-35"
+        },
+        "activity_properties": {
+            "avg_distance": 0.6,
+            "u_monthly_avg_event_count": 2.5,
+            "app_open_efficiency": 0.2,
+            "ticket_buy_month_cluster": "Düşük",
+            "ticket_buy_mini_app_open_cluster": "Orta"
+        },
+        "u_event_type_distribution": {
+            "atolye": 0.5,
+            "festival": 0.2,
+            "gezi": 0.0,
+            "konser": 0.0,
+            "sahne_gosterisi": 0.0,
+            "sergi": 0.0,
+            "sinema": 0.1,
+            "sinema_soylesi": 0.0,
+            "soylesi": 0.1,
+            "tiyatro": 0.0,
+            "cocuk": 0.0
+        },
+        "u_event_time_distribution": {
+            "weekdays": 0.8,
+            "weekend": 0.2
+        }
+    }
+    }
+
+
+    2. Places
+
+    {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point", 
+            "coordinates": [29.086688866410537, 41.043431061633214]
+        },
+        "properties": {
+            "venue_properties {
+                "venueId": "place2",
+                "name": "Babylon",
+                "address": "Şehit Muhtar Mahallesi, 34435 Beyoğlu/İstanbul",
+                "description": "Canlı müzik mekanı",
+                "v_monthly_avg_event_count": 55,
+                "v_neighbourhood_uavt": "1161",
+                "v_neighbourhood_district": "Beyoğlu",
+            },
+            "v_event_type_distribution": {
+                "atolye": 0.5,
+                "festival": 0.2,
+                "gezi": 0.0,
+                "konser": 0.0,
+                "sahne_gosterisi": 0.0,
+                "sergi": 0.0,
+                "sinema": 0.1,
+                "sinema_soylesi": 0.0,
+                "soylesi": 0.1,
+                "tiyatro": 0.0,
+                "cocuk": 0.0
+            },
+            "v_event_time_distribution": {
+                "weekdays": 0.8,
+                "weekend": 0.2
+            }
+        }
+    }    
+
+    3. Events
+
+    {
+        "userId": "user1",
+        "venueId": "place2",
+        "distance": 7.8,
+        "eventType": "Konser",
+        "visitCount": 3
+    }
+
+
+II. Filtreler 3 kategoride olacak.
+    1. Kullanıcı filtreleri
+    - İlçe (Dropdown)
+    - Logedinlocation Mahalle (Sadece Seçilen İlçedeki Mahalleler, Dropdown)
+    - Aylık Bilet Alma Segmenti (Toggle button group)
+    - Bilet Alma Mini App Açma Segmenti (Toggle button group)
+    - Ortalama Uzaklık (Min Slider)
+    - Etkinlik Türü Dağılımı (Slider)
+    - Etkinlik Günü Dağılımı (Slider)
+
+
+    2. Mekan filtreleri
+    - İlçe (Dropdown)
+    - Mahalle (Sadece Seçilen İlçedeki Mahalleler, Dropdown)
+    - Aylık Etkinlik Sayısı (Slider)
+    - Etkinlik Türü Dağılımı (Slider)
+
+
+    3. Etkinlik filtreleri
+    -Etkinlik Türü (Dropdown)
+
