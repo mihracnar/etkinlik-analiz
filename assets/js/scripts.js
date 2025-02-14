@@ -727,6 +727,34 @@ document.querySelector('.filter-button').addEventListener('click', function() {
     updateMap();
 });
 
+
+function resetFilters() {
+    // Select elemanlarını sıfırla
+    document.getElementById('userDistrictFilter').value = 'all';
+    document.getElementById('ageFilter').value = 'all';
+    document.getElementById('venueDistrictFilter').value = 'all';
+    document.getElementById('venueFilter').value = 'all';
+    document.getElementById('categoryFilter').value = 'all';
+    document.getElementById('distanceFilter').value = 'all';
+
+    // Etkinlik türü sliderlarını sıfırla
+    document.querySelectorAll('.event-type-slider').forEach(slider => {
+        slider.value = 0;
+        const type = slider.id.replace('_slider', '');
+        document.getElementById(`${type}_value`).textContent = '%0';
+        document.getElementById(`${type}_fill`).style.width = '100%';
+    });
+
+    // Kalan toplamı güncelle
+    document.getElementById('remainingTotal').textContent = '%100';
+
+    // tempEventTypeFilters'ı sıfırla
+    tempEventTypeFilters = {};
+
+    // Haritayı güncelle
+    updateMap();
+}
+
 //-----------------------------------------------------------------------------
 // 6. VISUALIZATION AND UPDATE FUNCTIONS
 //-----------------------------------------------------------------------------

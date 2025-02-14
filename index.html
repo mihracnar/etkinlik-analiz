@@ -39,7 +39,7 @@
         <div class="toggle-buttons">
             <button class="toggle-btn active" id="heatmapToggle">
                 <i class="fas fa-fire"></i>
-                Heatmap
+                Isı Haritası
             </button>
             <button class="toggle-btn" id="linesToggle">  <!-- active class'ı kaldırıldı -->
                 <i class="fas fa-route"></i>
@@ -143,7 +143,14 @@
             </div>
         </div>
     
-        <button onclick="updateMap()" class="filter-button">Uygula</button>
+        <div class="filter-buttons">
+            <button onclick="resetFilters()" class="filter-button reset-button">
+                <i class="fas fa-undo"></i> Filtreleri Sıfırla
+            </button>
+            <button onclick="updateMap()" class="filter-button apply-button">
+                <i class="fas fa-check"></i> Uygula
+            </button>
+        </div>
     </div>
 
     <div id="map-legend">
