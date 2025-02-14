@@ -543,3 +543,42 @@ body, html {
 .toggle-btn i {
     font-size: 14px;
 }
+
+
+
+/* Map Label */
+.map-label {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: 150px;
+    text-align: center;
+}
+
+.label-content {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    color: rgba(13, 13, 13, 0.95);
+    text-align: center;
+    background: transparent;
+    padding: 0;
+    white-space: normal;
+    overflow-wrap: normal;
+    word-wrap: normal;
+    display: block;
+    /* Text buffer efekti */
+    text-shadow: 
+        -1px -1px 0 rgba(255, 255, 255, 0.8),
+        1px -1px 0 rgba(255, 255, 255, 0.8),
+        -1px 1px 0 rgba(255, 255, 255, 0.8),
+        1px 1px 0 rgba(255, 255, 255, 0.8),
+        -2px 0 0 rgba(255, 255, 255, 0.8),
+        2px 0 0 rgba(255, 255, 255, 0.8),
+        0 2px 0 rgba(255, 255, 255, 0.8),
+        0 -2px 0 rgba(255, 255, 255, 0.8),
+        3px 3px 5px rgba(0, 0, 0, 0.7),
+        3px 3px 5px rgba(0, 0, 0, 0.7);
+    position: relative;
+    z-index: 1000;
+}

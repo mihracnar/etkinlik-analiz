@@ -250,6 +250,73 @@ async function loadData() {
     }
 }
 
+// Label çakışmasını kontrol eden fonksiyon
+function isOverlapping(marker1, marker2) {
+    const pos1 = map.latLngToContainerPoint(marker1.getLatLng());
+    const pos2 = map.latLngToContainerPoint(marker2.getLatLng());
+    
+    // Label boyutları
+    const width = 120;
+    const height = 20;
+    const buffer = 10;
+
+    return Math.abs(pos1.x - pos2.x) < (width + buffer) && 
+           Math.abs(pos1.y - pos2.y) < (height + buffer);
+}
+
+// Label'ları güncelleme fonksiyonu
+function updateLabels() {
+    const currentZoom = map.getZoom();
+    if (currentZoom < 14) {
+        // Zoom seviyesi düşükse tüm label'ları gizle
+        venueLayer.eachLayer(marker => {
+            if (marker.labelMarker && map.hasLayer(marker.labelMarker)) {
+                map.removeLayer(marker.labelMarker);
+            }
+        });
+        return;
+    }
+
+    // Görünür alandaki marker'ları al
+    const bounds = map.getBounds();
+    const visibleMarkers = [];
+    venueLayer.eachLayer(marker => {
+        if (marker.labelMarker && bounds.contains(marker.getLatLng())) {
+            visibleMarkers.push(marker);
+        }
+    });
+
+    // Çakışmaları kontrol et ve görünür label'ları belirle
+    const visibleLabels = new Set();
+    visibleMarkers.forEach((marker1, index) => {
+        let canShow = true;
+        
+        // Önceden görünür olarak işaretlenmiş label'larla çakışma kontrolü
+        for (let i = 0; i < index; i++) {
+            const marker2 = visibleMarkers[i];
+            if (visibleLabels.has(marker2) && isOverlapping(marker1, marker2)) {
+                canShow = false;
+                break;
+            }
+        }
+
+        // Label'ı göster veya gizle
+        if (canShow) {
+            visibleLabels.add(marker1);
+            if (!map.hasLayer(marker1.labelMarker)) {
+                marker1.labelMarker.addTo(map);
+            }
+        } else if (map.hasLayer(marker1.labelMarker)) {
+            map.removeLayer(marker1.labelMarker);
+        }
+    });
+}
+
+// Map event listener'ları
+map.on('zoomend moveend', updateLabels);
+
+
+// addVenueMarker fonksiyonunu güncelle
 function addVenueMarker(place) {
     const venueIcon = L.divIcon({
         className: 'custom-icon',
@@ -265,6 +332,21 @@ function addVenueMarker(place) {
     });
 
     const props = place.properties.venue_properties;
+    
+    // Label oluştur
+    const label = L.divIcon({
+        className: 'map-label',
+        html: `<div class="label-content">${props.name}</div>`,
+        iconSize: [120, 20],
+        iconAnchor: [60, -10]
+    });
+
+    // Label marker'ı oluştur
+    const labelMarker = L.marker([coords[1], coords[0]], {
+        icon: label,
+        zIndexOffset: 1000
+    });
+
     marker.bindPopup(`
         <div class="venue-popup">
             <h3 class="font-bold text-lg mb-2">${props.name}</h3>
@@ -273,10 +355,32 @@ function addVenueMarker(place) {
         </div>
     `);
 
-    // Store the venue ID with the marker
     marker.venueId = props.venueId;
+    marker.labelMarker = labelMarker;
     marker.addTo(venueLayer);
 }
+
+// Map zoom event listener'ı ekleyelim
+map.on('zoomend', function() {
+    const currentZoom = map.getZoom();
+    
+    // Tüm venue marker'ları kontrol et
+    venueLayer.eachLayer(marker => {
+        if (marker.labelMarker) {
+            if (currentZoom >= 5) {
+                if (!map.hasLayer(marker.labelMarker)) {
+                    marker.labelMarker.addTo(map);
+                }
+            } else {
+                if (map.hasLayer(marker.labelMarker)) {
+                    map.removeLayer(marker.labelMarker);
+                }
+            }
+        }
+    });
+});
+
+
 
 //-----------------------------------------------------------------------------
 // 5. FILTERING AND DATA PROCESSING
@@ -858,6 +962,13 @@ function updateMap() {
     }
 }
 
+// Harita yüklendiğinde çizgileri gizle
+document.addEventListener('DOMContentLoaded', function() {
+    const svgContainer = svgOverlay._container;
+    if (svgContainer) {
+        svgContainer.style.visibility = 'hidden';
+    }
+});
 
 document.getElementById('ageFilter')?.removeEventListener('change', updateMap);
 document.getElementById('venueDistrictFilter')?.removeEventListener('change', function() {
