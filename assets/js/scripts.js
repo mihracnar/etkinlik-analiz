@@ -314,6 +314,7 @@ function getFilteredEvents() {
 function getFilteredUsers() {
     const ageFilter = document.getElementById('ageFilter')?.value || 'all';
     const userDistrictFilter = document.getElementById('userDistrictFilter')?.value || 'all';
+    const categoryFilter = document.getElementById('categoryFilter')?.value || 'all'; // Etkinlik kategorisi filtresi eklendi
 
     return Array.from(userData.values()).filter(user => {
         // Temel kullanıcı filtreleri
@@ -331,7 +332,18 @@ function getFilteredUsers() {
             }
         }
 
-        return ageMatch && districtMatch && eventTypeMatch;
+        // Etkinlik kategorisi kontrolü
+        let categoryMatch = true;
+        if (categoryFilter !== 'all') {
+            // Kullanıcının seçili kategoride etkinliği var mı kontrol et
+            const userEvents = eventConnections.filter(event => 
+                event.userId === user.user_properties.userId && 
+                event.eventType.toLowerCase() === categoryFilter
+            );
+            categoryMatch = userEvents.length > 0;
+        }
+
+        return ageMatch && districtMatch && eventTypeMatch && categoryMatch;
     });
 }
 
@@ -881,6 +893,26 @@ function toggleLayers() {
         modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
     }
 }
+
+// Toggle butonları için event listener'lar
+document.getElementById('heatmapToggle').addEventListener('click', function() {
+    this.classList.toggle('active');
+    if (this.classList.contains('active')) {
+        map.addLayer(heat);
+    } else {
+        map.removeLayer(heat);
+    }
+});
+
+document.getElementById('linesToggle').addEventListener('click', function() {
+    this.classList.toggle('active');
+    const svgContainer = svgOverlay._container;
+    if (this.classList.contains('active')) {
+        svgContainer.style.visibility = 'visible';  // display yerine visibility kullanıyoruz
+    } else {
+        svgContainer.style.visibility = 'hidden';
+    }
+});
 
 //-----------------------------------------------------------------------------
 // 8. EVENT LISTENERS
