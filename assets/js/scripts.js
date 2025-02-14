@@ -528,12 +528,12 @@ function initializeEventTypeSliders() {
     const filterContainer = document.getElementById('eventTypeSliders');
     const remainingTotalSpan = document.getElementById('remainingTotal');
     let filters = {};
+    remainingTotalSpan.textContent = '%100';
     
     // Container'ı temizle
     filterContainer.innerHTML = '';
 
     Object.entries(eventTypes).forEach(([key, label]) => {
-        // Her etkinlik türü için slider oluştur
         const filterItem = document.createElement('div');
         filterItem.className = 'filter-item';
         filterItem.innerHTML = `
@@ -542,7 +542,7 @@ function initializeEventTypeSliders() {
                 <span class="value-display" id="${key}_value">0.0</span>
             </div>
             <div class="slider-container">
-                <div class="slider-fill" id="${key}_fill"></div>
+                <div class="slider-fill" id="${key}_fill" style="width: 100%;"></div>
                 <input type="range" 
                        class="event-type-slider" 
                        id="${key}_slider"
@@ -553,9 +553,11 @@ function initializeEventTypeSliders() {
             </div>
         `;
         filterContainer.appendChild(filterItem);
-
+    
         const slider = filterItem.querySelector(`#${key}_slider`);
         slider.addEventListener('input', handleSliderChange);
+        document.getElementById(`${key}_value`).textContent = '%0';
+
     });
 }
 
@@ -568,29 +570,27 @@ function handleSliderChange(e) {
     const sliders = document.querySelectorAll('.event-type-slider');
     let total = 0;
     
-    // Toplam değeri hesapla
     sliders.forEach(slider => {
         total += parseFloat(slider.value);
     });
 
     const remainingTotal = document.getElementById('remainingTotal');
-    remainingTotal.textContent = Math.max(0, (1 - total)).toFixed(1);
+    remainingTotal.textContent = `%${Math.max(0, (1 - total) * 100).toFixed(0)}`;
     
-    // Eğer toplam 1'i geçerse, değeri ayarla
     if (total > 1) {
         e.target.value = Math.max(0, parseFloat(e.target.value) - (total - 1));
     }
 
-    // Değer göstergesini ve dolgu çubuğunu güncelle
+    // Değer göstergesini "en az %" formatında güncelle
     const type = e.target.id.replace('_slider', '');
     const value = parseFloat(e.target.value);
-    document.getElementById(`${type}_value`).textContent = value.toFixed(1);
+    document.getElementById(`${type}_value`).textContent = value > 0 ? 
+        `en az %${(value * 100).toFixed(0)}` : 
+        '%0';
     
-    // Fill'i sağdan sola doğru güncelle
     const fillElement = document.getElementById(`${type}_fill`);
-    fillElement.style.width = `${(1 - value) * 100}%`; // Boş kısmın genişliği
+    fillElement.style.width = `${(1 - value) * 100}%`;
     
-    // Değerleri geçici olarak sakla
     tempEventTypeFilters[type] = value;
 }
 
