@@ -226,10 +226,11 @@ body, html {
     border: none;
     border-radius: 8px 8px 0 0;
     cursor: pointer;
-    font-size: 13px; /* Font boyutunu küçülttük */
+    font-size: 15px; /* Font boyutunu küçülttük */
     flex: 1;
     white-space: nowrap; /* Metni alt satıra geçirmemek için */
     overflow: hidden; /* Taşan metni gizle */
+    font-weight: 500;
     text-overflow: ellipsis; /* Taşan metin yerine ... göster */
 }
 
@@ -237,7 +238,7 @@ body, html {
     background: #fff;
     border: 1px solid #e5e7eb;
     border-bottom: none;
-    font-weight: 500; /* Bold yerine medium yaptık */
+    font-weight: 600; /* Bold yerine medium yaptık */
 }
 
 .tab-content {
@@ -256,10 +257,11 @@ body, html {
 .filter-group label {
     display: block;
     margin-bottom: 8px;
-    font-weight: 500;
+    font-weight: 600;
     font-size: 14px;
-    color: #374151;
+    color: #000000;
 }
+
 
 .filter-group select {
     width: 100%;
@@ -328,9 +330,10 @@ body, html {
 
 .remaining-total {
     text-align: right;
-    margin-bottom: 10px;
-    color: #0d6efd;
-    font-weight: bold;
+    margin-bottom: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #353535;
 }
 
 .range-label {
@@ -339,48 +342,73 @@ body, html {
     margin-top: 5px;
 }
 
-/* CSS güncellemeleri */
+
 .event-type-distribution {
     margin-top: 20px;
-    padding: 15px;
-    background: #f8f9fa;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
     border-radius: 8px;
-    max-width: 100%; /* Modal genişliğine sığması için */
+}
+
+.event-type-distribution label.distribution-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0a0a0b;
+    margin-bottom: 16px;
+    font-family: 'Open Sans', sans-serif;
 }
 
 .event-type-sliders {
     max-height: 300px;
     overflow-y: auto;
-    padding-right: 10px; /* Scroll bar için boşluk */
+    padding: 16px;
+    background-color: #eaeaea; /* Açık mavi-mor tonu */
+    border-radius: 6px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    border: 1px solid #ffffff;
 }
 
 .filter-item {
-    margin-bottom: 12px;
-    padding: 8px;
-    border-bottom: 1px solid #eee;
+    margin-bottom: 16px;
+    padding: 12px;
+    background-color: rgb(248, 248, 248); /* Her bir item'a beyaz background */
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.filter-item:last-child {
+    margin-bottom: 0;
 }
 
 .range-label {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 5px;
-    font-size: 0.9rem; /* Daha kompakt görünüm için */
+    margin-bottom: 8px;
 }
 
-.value-display {
-    font-weight: bold;
-    color: #007bff;
-    min-width: 40px;
+.range-label span:first-child {
+    font-size: 14px;
+    color: #070707;  /* Etkinlik adı rengi */
+    font-weight: 500;
+ }
+ 
+ .value-display {
+    font-size: 14px;
+    font-weight: 600;
+    color: #030303;  /* Yüzde değeri rengi */
+    min-width: 80px;  /* Sabit genişlik */
     text-align: right;
-}
+ }
 
 .slider-container {
     position: relative;
-    width: 450px; /* Genişliği arttırdım */
+    width: 450px;
     height: 6px;
-    background: #e9ecef;
-    border-radius: 3px;
+    background-color: #e5e7eb;
+    border-radius: 4px;
 }
 
 .event-type-slider {
@@ -413,29 +441,63 @@ body, html {
     top: 0;
     right: 0;
     height: 100%;
-    background: #007bff;
-    border-radius: 3px;
+    background-color: #2563eb;
+    border-radius: 4px;
     pointer-events: none;
 }
 
+.event-type-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    outline: none;
+    margin: 0;
+    padding: 0;
+}
+
+.event-type-slider::-webkit-slider-runnable-track {
+    -webkit-appearance: none;
+    background: transparent;
+    border: none;
+}
+
+.event-type-slider::-moz-range-track {
+    background: transparent;
+    border: none;
+}
+
+/* Slider Thumb (Kaydırıcı) */
 .event-type-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 16px;
     height: 16px;
+    margin-top: -5px;
     border-radius: 50%;
-    background: #007bff;
+    background-color: #2563eb;
+    border: 2px solid #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     cursor: pointer;
-    border: 2px solid #fff;
-    box-shadow: 0 0 3px rgba(0,0,0,0.2);
-    margin-top: -5px; /* Thumb'ı dikey olarak ortala */
+    transition: transform 0.15s ease;
 }
 
 .event-type-slider::-moz-range-thumb {
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: #007bff;
+    background-color: #2563eb;
+    border: 2px solid #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     cursor: pointer;
-    border: 2px solid #fff;
-    box-shadow: 0 0 3px rgba(0,0,0,0.2);
+    transition: transform 0.15s ease;
+}
+
+/* Hover Efektleri */
+.event-type-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+.event-type-slider::-moz-range-thumb:hover {
+    transform: scale(1.1);
 }
