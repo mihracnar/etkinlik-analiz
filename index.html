@@ -61,6 +61,7 @@
         
         <!-- User Filters Tab -->
         <div class="tab-content active" id="userFilters">
+            <!-- Mevcut kullanıcı filtreleri -->
             <div class="filter-group">
                 <label>Kullanıcı İlçesi:</label>
                 <select id="userDistrictFilter">
@@ -76,6 +77,17 @@
                     <option value="36-45">36-45</option>
                     <option value="45+">45+</option>
                 </select>
+            </div>
+        
+            <!-- Etkinlik Türü Dağılımı için yeni bölüm -->
+            <div class="filter-group event-type-distribution">
+                <label class="distribution-label">Etkinlik Türü İlgisi</label>
+                <div class="remaining-total">
+                    Kalan: <span id="remainingTotal">1.0</span>
+                </div>
+                <div id="eventTypeSliders" class="event-type-sliders">
+                    <!-- Sliderlar JavaScript ile eklenecek -->
+                </div>
             </div>
         </div>
         

@@ -283,42 +283,56 @@ function addVenueMarker(place) {
 //-----------------------------------------------------------------------------
 
 function getFilteredEvents() {
-    const ageFilter = document.getElementById('ageFilter')?.value || 'all';
     const categoryFilter = document.getElementById('categoryFilter')?.value || 'all';
     const distanceFilter = document.getElementById('distanceFilter')?.value || 'all';
     const venueFilter = document.getElementById('venueFilter')?.value || 'all';
-    const userDistrictFilter = document.getElementById('userDistrictFilter')?.value || 'all';
     const venueDistrictFilter = document.getElementById('venueDistrictFilter')?.value || 'all';
 
+    // Önce filtrelenmiş kullanıcıları al
+    const filteredUsers = getFilteredUsers();
+    const filteredUserIds = new Set(filteredUsers.map(user => user.user_properties.userId));
+
     return eventConnections.filter(event => {
-        const user = userData.get(event.userId);
-        if (!user) return false;
+        // Kullanıcı filtrelerine göre kontrol
+        if (!filteredUserIds.has(event.userId)) return false;
 
         const venue = venueData.get(event.venueId);
         if (!venue) return false;
 
-        const ageMatch = ageFilter === 'all' || user.user_properties.age === ageFilter;
+        // Mekan ve etkinlik filtreleri
         const categoryMatch = categoryFilter === 'all' || event.eventType.toLowerCase() === categoryFilter;
         const distanceMatch = distanceFilter === 'all' || getDistanceCategory(event.distance) === distanceFilter;
         const venueMatch = venueFilter === 'all' || event.venueId === venueFilter;
-        const userDistrictMatch = userDistrictFilter === 'all' || 
-            user.user_properties.u_neighbourhood_district === userDistrictFilter;
         const venueDistrictMatch = venueDistrictFilter === 'all' || 
             venue.venue_properties.v_neighbourhood_district === venueDistrictFilter;
 
-        return ageMatch && categoryMatch && distanceMatch && venueMatch && 
-               userDistrictMatch && venueDistrictMatch;
+        return categoryMatch && distanceMatch && venueMatch && venueDistrictMatch;
     });
 }
 
 // Update the getFilteredUsers function to use filtered events
 function getFilteredUsers() {
-    const filteredEvents = getFilteredEvents();
-    const filteredUserIds = new Set(filteredEvents.map(event => event.userId));
+    const ageFilter = document.getElementById('ageFilter')?.value || 'all';
+    const userDistrictFilter = document.getElementById('userDistrictFilter')?.value || 'all';
 
-    return Array.from(userData.values()).filter(user => 
-        filteredUserIds.has(user.user_properties.userId)
-    );
+    return Array.from(userData.values()).filter(user => {
+        // Temel kullanıcı filtreleri
+        const ageMatch = ageFilter === 'all' || user.user_properties.age === ageFilter;
+        const districtMatch = userDistrictFilter === 'all' || 
+            user.user_properties.u_neighbourhood_district === userDistrictFilter;
+
+        // Etkinlik türü dağılımı kontrolü
+        let eventTypeMatch = true;
+        for (const [type, minValue] of Object.entries(tempEventTypeFilters)) {
+            if (!user.u_event_type_distribution[type] || 
+                user.u_event_type_distribution[type] < minValue) {
+                eventTypeMatch = false;
+                break;
+            }
+        }
+
+        return ageMatch && districtMatch && eventTypeMatch;
+    });
 }
 
 
@@ -414,6 +428,20 @@ function updateDistrictFilters() {
 }
 
 
+const eventTypes = {
+    "atolye": "Atölye",
+    "festival": "Festival",
+    "gezi": "Gezi",
+    "konser": "Konser",
+    "sahne_gosterisi": "Sahne Gösterisi",
+    "sergi": "Sergi",
+    "sinema": "Sinema",
+    "sinema_soylesi": "Sinema Söyleşi",
+    "soylesi": "Söyleşi",
+    "tiyatro": "Tiyatro",
+    "cocuk": "Çocuk"
+};
+
 // Tüm filtreleri güncelleme fonksiyonu
 function updateAllFilters() {
     updateDistrictFilters();
@@ -421,7 +449,9 @@ function updateAllFilters() {
     updateEventCategoryFilters();
     updateDistanceFilters();
     updateVenueFilterOptions();
+    initializeEventTypeSliders();
 }
+
 
 // Yaş filtrelerini güncelleme
 function updateAgeFilters() {
@@ -491,6 +521,95 @@ function updateDistanceFilters() {
         }
     });
 }
+
+
+// Etkinlik türü sliderlarını başlatma fonksiyonu
+function initializeEventTypeSliders() {
+    const filterContainer = document.getElementById('eventTypeSliders');
+    const remainingTotalSpan = document.getElementById('remainingTotal');
+    let filters = {};
+    
+    // Container'ı temizle
+    filterContainer.innerHTML = '';
+
+    Object.entries(eventTypes).forEach(([key, label]) => {
+        // Her etkinlik türü için slider oluştur
+        const filterItem = document.createElement('div');
+        filterItem.className = 'filter-item';
+        filterItem.innerHTML = `
+            <div class="range-label">
+                <span>${label}</span>
+                <span class="value-display" id="${key}_value">0.0</span>
+            </div>
+            <div class="slider-container">
+                <div class="slider-fill" id="${key}_fill"></div>
+                <input type="range" 
+                       class="event-type-slider" 
+                       id="${key}_slider"
+                       min="0" 
+                       max="1" 
+                       step="0.1" 
+                       value="0">
+            </div>
+        `;
+        filterContainer.appendChild(filterItem);
+
+        const slider = filterItem.querySelector(`#${key}_slider`);
+        slider.addEventListener('input', handleSliderChange);
+    });
+}
+
+// Slider değişiklik işleyicisi
+// Event type sliderlar için değerleri tutacak geçici bir obje
+let tempEventTypeFilters = {};
+
+// Slider değişiklik işleyicisi
+function handleSliderChange(e) {
+    const sliders = document.querySelectorAll('.event-type-slider');
+    let total = 0;
+    
+    // Toplam değeri hesapla
+    sliders.forEach(slider => {
+        total += parseFloat(slider.value);
+    });
+
+    const remainingTotal = document.getElementById('remainingTotal');
+    remainingTotal.textContent = Math.max(0, (1 - total)).toFixed(1);
+    
+    // Eğer toplam 1'i geçerse, değeri ayarla
+    if (total > 1) {
+        e.target.value = Math.max(0, parseFloat(e.target.value) - (total - 1));
+    }
+
+    // Değer göstergesini ve dolgu çubuğunu güncelle
+    const type = e.target.id.replace('_slider', '');
+    const value = parseFloat(e.target.value);
+    document.getElementById(`${type}_value`).textContent = value.toFixed(1);
+    
+    // Fill'i sağdan sola doğru güncelle
+    const fillElement = document.getElementById(`${type}_fill`);
+    fillElement.style.width = `${(1 - value) * 100}%`; // Boş kısmın genişliği
+    
+    // Değerleri geçici olarak sakla
+    tempEventTypeFilters[type] = value;
+}
+
+// Uygula butonuna tıklama işleyicisi
+document.querySelector('.filter-button').addEventListener('click', function() {
+    // Slider değerlerini kalıcı filtrelere aktar
+    document.querySelectorAll('.event-type-slider').forEach(slider => {
+        const type = slider.id.replace('_slider', '');
+        const value = parseFloat(slider.value);
+        if (value > 0) {
+            tempEventTypeFilters[type] = value;
+        } else {
+            delete tempEventTypeFilters[type];
+        }
+    });
+
+    // Haritayı güncelle
+    updateMap();
+});
 
 //-----------------------------------------------------------------------------
 // 6. VISUALIZATION AND UPDATE FUNCTIONS

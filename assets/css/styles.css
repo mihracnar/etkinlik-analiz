@@ -338,3 +338,104 @@ body, html {
     justify-content: space-between;
     margin-top: 5px;
 }
+
+/* CSS güncellemeleri */
+.event-type-distribution {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    max-width: 100%; /* Modal genişliğine sığması için */
+}
+
+.event-type-sliders {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 10px; /* Scroll bar için boşluk */
+}
+
+.filter-item {
+    margin-bottom: 12px;
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.range-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+    font-size: 0.9rem; /* Daha kompakt görünüm için */
+}
+
+.value-display {
+    font-weight: bold;
+    color: #007bff;
+    min-width: 40px;
+    text-align: right;
+}
+
+.slider-container {
+    position: relative;
+    width: 450px; /* Genişliği arttırdım */
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 3px;
+}
+
+.event-type-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    outline: none;
+    margin: 0;
+    padding: 0;
+}
+
+.event-type-slider::-webkit-slider-runnable-track {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    border: none;
+    width: 100%;
+}
+
+.event-type-slider::-moz-range-track {
+    background: transparent;
+    border: none;
+    width: 100%;
+}
+
+.slider-fill {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    background: #007bff;
+    border-radius: 3px;
+    pointer-events: none;
+}
+
+.event-type-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 0 3px rgba(0,0,0,0.2);
+    margin-top: -5px; /* Thumb'ı dikey olarak ortala */
+}
+
+.event-type-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #007bff;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 0 3px rgba(0,0,0,0.2);
+}
