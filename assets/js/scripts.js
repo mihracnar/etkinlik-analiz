@@ -904,13 +904,24 @@ document.getElementById('heatmapToggle').addEventListener('click', function() {
     }
 });
 
+map.on('moveend zoomend', function() {
+    if (document.getElementById('linesToggle').classList.contains('active')) {
+        // Sadece lines görünürse ve harita hareket ederse line'ları güncelle
+        const filteredEvents = getFilteredEvents();
+        updateLines(filteredEvents);
+    }
+});
+
+
 document.getElementById('linesToggle').addEventListener('click', function() {
     this.classList.toggle('active');
-    const svgContainer = svgOverlay._container;
     if (this.classList.contains('active')) {
-        svgContainer.style.visibility = 'visible';  // display yerine visibility kullanıyoruz
+        // Lines açıldığında mevcut duruma göre güncelle
+        const filteredEvents = getFilteredEvents();
+        updateLines(filteredEvents);
+        svgOverlay._container.style.visibility = 'visible';
     } else {
-        svgContainer.style.visibility = 'hidden';
+        svgOverlay._container.style.visibility = 'hidden';
     }
 });
 
