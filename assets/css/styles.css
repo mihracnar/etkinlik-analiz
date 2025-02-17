@@ -172,13 +172,13 @@ body, html {
 
 .apply-button {
     flex: 1;
-    background-color: #2563eb;
+    background-color: #000000;
     color: white;
     transition: background-color 0.2s;
 }
 
 .apply-button:hover {
-    background-color: #1d4ed8;
+    background-color: #4e4e4e;
 }
 
 .layer-group {
