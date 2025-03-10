@@ -85,6 +85,41 @@ function getDistanceCategory(distance) {
 // 4. DATA LOADING AND PROCESSING
 //-----------------------------------------------------------------------------
 
+function showLoadingOverlay() {
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay) {
+        overlay.style.display = 'flex';
+    }
+}
+
+function hideLoadingOverlay() {
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay) {
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+            overlay.style.display = 'none';
+            overlay.style.opacity = '1';
+        }, 500);
+    }
+}
+
+// loadData fonksiyonunu güncelleme
+async function loadData() {
+    showLoadingOverlay(); // Yükleme başladığında overlay'i göster
+    
+    try {
+        console.log('Starting data load...');
+        // mevcut kod...
+        
+        // İşlem tamamlandığında:
+        hideLoadingOverlay(); // Yükleme tamamlandığında overlay'i gizle
+    } catch (error) {
+        console.error('Fatal error in data processing:', error);
+        hideLoadingOverlay(); // Hata durumunda da overlay'i gizle
+        alert('Veri yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.');
+    }
+}
+
 async function loadData() {
     try {
         console.log('Starting data load...');
@@ -406,7 +441,8 @@ function getFilteredEvents() {
 function getFilteredUsers() {
     const ageFilter = document.getElementById('ageFilter')?.value || 'all';
     const userDistrictFilter = document.getElementById('userDistrictFilter')?.value || 'all';
-    const categoryFilter = document.getElementById('categoryFilter')?.value || 'all'; // Etkinlik kategorisi filtresi eklendi
+    const categoryFilter = document.getElementById('categoryFilter')?.value || 'all';
+    const venueFilter = document.getElementById('venueFilter')?.value || 'all'; // Mekan filtresi eklendi
 
     return Array.from(userData.values()).filter(user => {
         // Temel kullanıcı filtreleri
@@ -427,7 +463,6 @@ function getFilteredUsers() {
         // Etkinlik kategorisi kontrolü
         let categoryMatch = true;
         if (categoryFilter !== 'all') {
-            // Kullanıcının seçili kategoride etkinliği var mı kontrol et
             const userEvents = eventConnections.filter(event => 
                 event.userId === user.user_properties.userId && 
                 event.eventType.toLowerCase() === categoryFilter
@@ -435,7 +470,17 @@ function getFilteredUsers() {
             categoryMatch = userEvents.length > 0;
         }
 
-        return ageMatch && districtMatch && eventTypeMatch && categoryMatch;
+        // Mekan filtresi kontrolü
+        let venueMatch = true;
+        if (venueFilter !== 'all') {
+            const userVenueEvents = eventConnections.filter(event => 
+                event.userId === user.user_properties.userId && 
+                event.venueId === venueFilter
+            );
+            venueMatch = userVenueEvents.length > 0;
+        }
+
+        return ageMatch && districtMatch && eventTypeMatch && categoryMatch && venueMatch;
     });
 }
 
