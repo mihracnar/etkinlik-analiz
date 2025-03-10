@@ -156,23 +156,11 @@ async function loadData() {
             if (!placesResponse.ok) throw new Error(`HTTP error! status: ${placesResponse.status}`);
             placesGeoJSON = await placesResponse.json();
             
-            if (!isValidGeoJSON(placesGeoJSON)) {
-                console.warn('Places data is not in valid GeoJSON format');
-                throw new Error('Invalid GeoJSON format');
-            }
-
-            placesGeoJSON.features = placesGeoJSON.features.filter(feature => {
-                if (!isValidPlacesFeature(feature)) {
-                    console.warn('Skipping invalid place feature:', feature);
-                    return false;
-                }
-                return true;
-            });
-
-            console.log(`Successfully validated ${placesGeoJSON.features.length} places`);
+            // veri validasyonu...
         } catch (error) {
-            console.warn('Using sample places data due to:', error);
-            placesGeoJSON = sampleData.places;
+            console.error('Failed to load places data:', error);
+            placesGeoJSON = { type: "FeatureCollection", features: [] }; // Boş GeoJSON yapısı
+            alert('Mekan verisi yüklenemedi. Lütfen daha sonra tekrar deneyin.');
         }
 
         // Events data loading
