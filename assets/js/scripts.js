@@ -100,27 +100,22 @@ function hideLoadingOverlay() {
             overlay.style.display = 'none';
             overlay.style.opacity = '1';
         }, 500);
+        console.log('Loading overlay hidden');
     }
 }
 
-// loadData fonksiyonunu güncelleme
+// Sayfa tamamen yüklendiğinde de kontrol et ve zorla kaldır
+document.addEventListener('DOMContentLoaded', function() {
+    // Sayfa tamamen yüklendikten 5 saniye sonra zorla kaldır
+    setTimeout(function() {
+        hideLoadingOverlay();
+        console.log('Force hiding overlay after timeout');
+    }, 5000);
+});
+
 async function loadData() {
     showLoadingOverlay(); // Yükleme başladığında overlay'i göster
     
-    try {
-        console.log('Starting data load...');
-        // mevcut kod...
-        
-        // İşlem tamamlandığında:
-        hideLoadingOverlay(); // Yükleme tamamlandığında overlay'i gizle
-    } catch (error) {
-        console.error('Fatal error in data processing:', error);
-        hideLoadingOverlay(); // Hata durumunda da overlay'i gizle
-        alert('Veri yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.');
-    }
-}
-
-async function loadData() {
     try {
         console.log('Starting data load...');
         
@@ -266,9 +261,19 @@ async function loadData() {
         updateDistrictFilters();
         updateAllFilters();
         updateMap();
+        
+        // Kullanıcı verisi yüklendiyse overlay'i gizle
+        if (userData.size > 0) {
+            console.log('User data loaded, hiding overlay');
+            hideLoadingOverlay();
+        } else {
+            // Eğer kullanıcı verisi yüklenemezse, 3 saniye sonra gizle
+            setTimeout(hideLoadingOverlay, 3000);
+        }
 
     } catch (error) {
         console.error('Fatal error in data processing:', error);
+        hideLoadingOverlay(); // Hata durumunda da overlay'i gizle
         alert('Veri yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.');
     }
 }
