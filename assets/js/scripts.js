@@ -442,28 +442,18 @@ function getFilteredEvents() {
     });
 }
 
-// Update the getFilteredUsers function to use filtered events
 function getFilteredUsers() {
     const ageFilter = document.getElementById('ageFilter')?.value || 'all';
-    const userDistrictFilter = document.getElementById('userDistrictFilter')?.value || 'all';
+    const userDistrictFilter = document.getElementById('userDistrictFilter')?.value || '';
     const categoryFilter = document.getElementById('categoryFilter')?.value || 'all';
-    const venueFilter = document.getElementById('venueFilter')?.value || 'all'; // Mekan filtresi eklendi
+    const venueFilter = document.getElementById('venueFilter')?.value || 'all';
 
     return Array.from(userData.values()).filter(user => {
         // Temel kullanıcı filtreleri
         const ageMatch = ageFilter === 'all' || user.user_properties.age === ageFilter;
-        const districtMatch = userDistrictFilter === 'all' || 
-            user.user_properties.u_neighbourhood_district === userDistrictFilter;
-
-        // Etkinlik türü dağılımı kontrolü
-        let eventTypeMatch = true;
-        for (const [type, minValue] of Object.entries(tempEventTypeFilters)) {
-            if (!user.u_event_type_distribution[type] || 
-                user.u_event_type_distribution[type] < minValue) {
-                eventTypeMatch = false;
-                break;
-            }
-        }
+        
+        // Kullanıcı ilçesi için "all" kontrolü yok, direkt karşılaştırma yapılıyor
+        const districtMatch = user.user_properties.u_neighbourhood_district === userDistrictFilter;
 
         // Etkinlik kategorisi kontrolü
         let categoryMatch = true;
@@ -485,9 +475,12 @@ function getFilteredUsers() {
             venueMatch = userVenueEvents.length > 0;
         }
 
-        return ageMatch && districtMatch && eventTypeMatch && categoryMatch && venueMatch;
+        return ageMatch && districtMatch && categoryMatch && venueMatch;
     });
 }
+
+// tempEventTypeFilters boş bir obje olarak kalıyor, tamamen kaldırmadan
+let tempEventTypeFilters = {};
 
 
 function aggregateLineData(filteredEvents) {
@@ -555,15 +548,33 @@ function updateDistrictFilters() {
     });
 
     const userDistrictFilter = document.getElementById('userDistrictFilter');
-    userDistrictFilter.innerHTML = '<option value="all">Tümü</option>';
-    [...userDistricts].sort().forEach(district => {
+    userDistrictFilter.innerHTML = ''; // "Tümü" seçeneği kaldırıldı
+    
+    // İlçeleri sırala
+    const sortedDistricts = [...userDistricts].sort();
+    
+    // Fatih ilçesi var mı kontrol et
+    const hasFatih = sortedDistricts.includes('Fatih');
+    
+    sortedDistricts.forEach((district) => {
         const option = document.createElement('option');
         option.value = district;
         option.textContent = district;
+        
+        // Eğer ilçe Fatih ise seçili yap
+        if (district === 'Fatih') {
+            option.selected = true;
+        }
+        // Fatih yoksa ilk öğeyi seçili yap (orijinal davranış)
+        else if (!hasFatih && district === sortedDistricts[0]) {
+            option.selected = true;
+        }
+        
         userDistrictFilter.appendChild(option);
     });
 
     // Mekan ilçelerini topla ve filtre seçeneklerini güncelle
+    // Bu bölümde "Tümü" seçeneğini koruyoruz
     const venueDistricts = new Set();
     venueData.forEach(venue => {
         if (venue.venue_properties?.v_neighbourhood_district) {
@@ -603,7 +614,6 @@ function updateAllFilters() {
     updateEventCategoryFilters();
     updateDistanceFilters();
     updateVenueFilterOptions();
-    initializeEventTypeSliders();
 }
 
 
@@ -677,95 +687,6 @@ function updateDistanceFilters() {
 }
 
 
-// Etkinlik türü sliderlarını başlatma fonksiyonu
-function initializeEventTypeSliders() {
-    const filterContainer = document.getElementById('eventTypeSliders');
-    const remainingTotalSpan = document.getElementById('remainingTotal');
-    let filters = {};
-    remainingTotalSpan.textContent = '%100';
-    
-    // Container'ı temizle
-    filterContainer.innerHTML = '';
-
-    Object.entries(eventTypes).forEach(([key, label]) => {
-        const filterItem = document.createElement('div');
-        filterItem.className = 'filter-item';
-        filterItem.innerHTML = `
-            <div class="range-label">
-                <span>${label}</span>
-                <span class="value-display" id="${key}_value">0.0</span>
-            </div>
-            <div class="slider-container">
-                <div class="slider-fill" id="${key}_fill" style="width: 100%;"></div>
-                <input type="range" 
-                       class="event-type-slider" 
-                       id="${key}_slider"
-                       min="0" 
-                       max="1" 
-                       step="0.1" 
-                       value="0">
-            </div>
-        `;
-        filterContainer.appendChild(filterItem);
-    
-        const slider = filterItem.querySelector(`#${key}_slider`);
-        slider.addEventListener('input', handleSliderChange);
-        document.getElementById(`${key}_value`).textContent = '%0';
-
-    });
-}
-
-// Slider değişiklik işleyicisi
-// Event type sliderlar için değerleri tutacak geçici bir obje
-let tempEventTypeFilters = {};
-
-// Slider değişiklik işleyicisi
-function handleSliderChange(e) {
-    const sliders = document.querySelectorAll('.event-type-slider');
-    let total = 0;
-    
-    sliders.forEach(slider => {
-        total += parseFloat(slider.value);
-    });
-
-    const remainingTotal = document.getElementById('remainingTotal');
-    remainingTotal.textContent = `%${Math.max(0, (1 - total) * 100).toFixed(0)}`;
-    
-    if (total > 1) {
-        e.target.value = Math.max(0, parseFloat(e.target.value) - (total - 1));
-    }
-
-    // Değer göstergesini "en az %" formatında güncelle
-    const type = e.target.id.replace('_slider', '');
-    const value = parseFloat(e.target.value);
-    document.getElementById(`${type}_value`).textContent = value > 0 ? 
-        `en az %${(value * 100).toFixed(0)}` : 
-        '%0';
-    
-    const fillElement = document.getElementById(`${type}_fill`);
-    fillElement.style.width = `${(1 - value) * 100}%`;
-    
-    tempEventTypeFilters[type] = value;
-}
-
-// Uygula butonuna tıklama işleyicisi
-document.querySelector('.filter-button').addEventListener('click', function() {
-    // Slider değerlerini kalıcı filtrelere aktar
-    document.querySelectorAll('.event-type-slider').forEach(slider => {
-        const type = slider.id.replace('_slider', '');
-        const value = parseFloat(slider.value);
-        if (value > 0) {
-            tempEventTypeFilters[type] = value;
-        } else {
-            delete tempEventTypeFilters[type];
-        }
-    });
-
-    // Haritayı güncelle
-    updateMap();
-});
-
-
 function resetFilters() {
     // Select elemanlarını sıfırla
     document.getElementById('userDistrictFilter').value = 'all';
@@ -774,17 +695,6 @@ function resetFilters() {
     document.getElementById('venueFilter').value = 'all';
     document.getElementById('categoryFilter').value = 'all';
     document.getElementById('distanceFilter').value = 'all';
-
-    // Etkinlik türü sliderlarını sıfırla
-    document.querySelectorAll('.event-type-slider').forEach(slider => {
-        slider.value = 0;
-        const type = slider.id.replace('_slider', '');
-        document.getElementById(`${type}_value`).textContent = '%0';
-        document.getElementById(`${type}_fill`).style.width = '100%';
-    });
-
-    // Kalan toplamı güncelle
-    document.getElementById('remainingTotal').textContent = '%100';
 
     // tempEventTypeFilters'ı sıfırla
     tempEventTypeFilters = {};
@@ -1141,18 +1051,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Add click event listener for the Apply button
-    const applyButton = document.querySelector('.filter-button');
-    if (applyButton) {
-        applyButton.addEventListener('click', () => {
-            updateMap();
-            // Optionally close the filters modal after applying
-            const filtersModal = document.getElementById('filtersModal');
-            if (filtersModal) {
-                filtersModal.style.display = 'none';
-            }
-        });
-    }
+    // Uygula butonuna tıklama işleyicisini güncelliyorum
+    document.querySelector('.filter-button').addEventListener('click', function() {
+        // Haritayı güncelle
+        updateMap();
+        
+        // Filtreleri kapatalım
+        const filtersModal = document.getElementById('filtersModal');
+        if (filtersModal) {
+            filtersModal.style.display = 'none';
+        }
+    });
 
     // Rest of the DOMContentLoaded event listeners remain the same
     const modals = document.querySelectorAll('.modal');
